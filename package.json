@@ -1,0 +1,32 @@
+{
+  "name": "arc-node-server",
+  "version": "1.0.0",
+  "description": "基于koa的node服务端",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=development nodemon app.js",
+    "build": "cross-env NODE_ENV=production node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HRDVV/arc-node-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HRDVV/arc-node-server/issues"
+  },
+  "homepage": "https://github.com/HRDVV/arc-node-server#readme",
+  "devDependencies": {
+    "cross-env": "^6.0.3",
+    "eslint": "^6.8.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-standard": "^4.0.1"
+  },
+  "dependencies": {
+    "koa": "^2.11.0",
+    "koa-router": "^7.4.0"
+  }
+}
