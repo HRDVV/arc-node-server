@@ -7,14 +7,9 @@
  */
 
 const BusinessCode = {
-
-}
-
-const HttpCode = {
-
+  SUCCESS: '000000'
 }
 
 module.exports = {
-  BusinessCode,
-  HttpCode
+  BusinessCode
 }
