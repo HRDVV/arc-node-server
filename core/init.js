@@ -12,6 +12,7 @@ const { set } = require('lodash')
 const Router = require('./router')
 const Config = require('./config')
 const { Service } = require('./interface')
+const { getIPAdress } = require('./utils')
 
 class ArcInit extends Koa {
   constructor(options) {
@@ -24,14 +25,16 @@ class ArcInit extends Koa {
    * 启动应用
    * @param {*} listeningListener 
    */
-  run(listeningListener = null) {
+  run(listeningListener) {
     if (!this.port) {
       this.port = 3000
     }
-    if (!this.hostname) {
-      this.hostname = '127.0.0.1'
-    }
-    this.listen(this.port, this.hostname, listeningListener)
+    this.listen(this.port || 3000, this.hostname || '', () => {
+      console.log(`>>>> 应用启动完毕 -> http://${ getIPAdress() }:${ this.port }`)
+      if (listeningListener && typeof listeningListener === 'function') {
+        listeningListener()
+      }
+    })
   }
   /**
    * 自动注入扩展

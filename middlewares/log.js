@@ -16,10 +16,10 @@ module.exports = async (ctx, next) => {
     log4js.configure({ appenders, categories })
     let log = log4js.getLogger('|')
     ctx.log = log
-    log.info(`>>>> ${ ctx.method } | ${ ctx.url } -- query: ${ toJSON(ctx.query) } params: ${ toJSON(ctx.params) } body: ${ toJSON(ctx.body) }`)
-    await next()
+    log.info(`>>>> ${ ctx.header['user-agent'] } | ${ ctx.method } | ${ ctx.url } -- query: ${ toJSON(ctx.request.query) } body: ${ toJSON(ctx.request.body) } header: ${ toJSON(ctx.request.header) }`)
   } catch (error) {
-    console.error('记录日志失败， 请求信息：' + toJSON(ctx.request))
-    await next()
+    console.error(error)
+    console.error('>>>> 记录日志失败， 请求信息：' + toJSON(ctx.request))
   }
+  await next()
 } 
