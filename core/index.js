@@ -10,10 +10,12 @@ const Arc = require('./init')
 const Router = require('./router')
 const Exception = require('./exception')
 const Interface = require('./interface')
+const utils = require('./utils')
 
 module.exports = {
   Arc,
   Router,
   Exception,
+  utils,
   ...Interface
 }

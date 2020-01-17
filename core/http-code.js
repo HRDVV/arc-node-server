@@ -1,5 +1,4 @@
 const HttpCode = {
-  SUCCESS: 200,
   BAD_REQUEST: 400,
   UNANTHORIZED: 401,
   FORBIDDEN: 403,

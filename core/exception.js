@@ -23,13 +23,57 @@ class NotFoundException extends HttpException {
   constructor(message, code, status) {
     super(
       message || '未找到资源',
-      code || '100000',
+      code || '100001',
       status || HttpCode.NOT_FOUNT
+    )
+  }
+}
+
+class BadRequestException extends HttpException {
+  constructor(message, code, status) {
+    super(
+      message || '参数错误',
+      code || '100002',
+      status || HttpCode.BAD_REQUEST
+    )
+  }
+}
+
+class ForbiddenException extends HttpException {
+  constructor(message, code, status) {
+    super(
+      message || '禁止访问',
+      code || '100003',
+      status || HttpCode.FORBIDDEN
+    )
+  }
+}
+
+class UnAnthorizedException extends HttpException {
+  constructor(message, code, status) {
+    super(
+      message || '鉴权失败',
+      code || '100004',
+      status || HttpCode.UNANTHORIZED
+    )
+  }
+}
+
+class ServerErrorException extends HttpException {
+  constructor(message, code, status) {
+    super(
+      message || '系统内部错误',
+      code || '100005',
+      status || HttpCode.SERVER_ERROR
     )
   }
 }
 
 module.exports = {
   HttpException,
-  NotFoundException
+  NotFoundException,
+  BadRequestException,
+  UnAnthorizedException,
+  ForbiddenException,
+  ServerErrorException
 }
