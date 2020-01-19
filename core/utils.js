@@ -28,5 +28,19 @@ module.exports = {
         }
       }
     }
+  },
+  /**
+   * 寻找规则
+   */
+  findRules(target, filterFunc = null) {
+    function _find(instance) {
+      if (instance == null) return []
+      let keys = Reflect.ownKeys(instance)
+      if (filterFunc && typeof filterFunc === 'function') {
+        keys = keys.filter(filterFunc)
+      }
+      return [...keys, ..._find(Reflect.getPrototypeOf(instance), filterFunc)]
+    }
+    return _find(target)
   }
 }

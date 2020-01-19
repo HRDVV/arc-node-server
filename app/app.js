@@ -1,6 +1,6 @@
 const bodyParser = require('koa-bodyparser')
-const error = require('../middlewares/exception')
-const log = require('../middlewares/log')
+const error = require('./middlewares/exception')
+const log = require('./middlewares/log')
 
 module.exports = function createApp(app) {
   // 全局异常处理

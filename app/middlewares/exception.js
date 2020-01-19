@@ -6,8 +6,8 @@
  * @desc 异常处理中间件
  */
 
-const { HttpException } = require('../core/exception')
-const ResultWraper = require('../app/libs/result')
+const { HttpException } = require('../../core/exception')
+const ResultWraper = require('../libs/result')
 
 module.exports = async (ctx, next) => {
   try {

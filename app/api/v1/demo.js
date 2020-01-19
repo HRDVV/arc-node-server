@@ -4,7 +4,8 @@ const demo = new Router({
   prefix: '/v1/demo'
 })
 
-demo.all('/list/:id', () => {
+demo.all('/list/:id', (ctx) => {
+  ctx.log.warn('>>>> 啊哈哈哈')
   throw new BadRequestException()
 })
 
