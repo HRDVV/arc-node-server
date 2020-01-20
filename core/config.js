@@ -11,9 +11,8 @@ const requireDirectory = require('require-directory')
 const fs = require('fs')
 
 class Config {
-  constructor(path) {
+  constructor() {
     this.store = null
-    this._findConfig(path)
   }
   /**
    * 加载配置
@@ -31,7 +30,7 @@ class Config {
    * 查找配置文件
    * @param {*} path 
    */
-  _findConfig(path) {
+  findConfig(path) {
     if (path) {
       this.store = this._loadConfig(path)
     } else {
@@ -61,4 +60,4 @@ class Config {
   }
 }
 
-module.exports = Config
+module.exports = new Config()

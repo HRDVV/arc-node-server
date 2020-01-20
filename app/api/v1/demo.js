@@ -1,4 +1,4 @@
-const { Router } = require('../../../core')
+const Router = require('../../../core/router')
 const DemoValidator = require('../../validators/demo')
 const ResultWraper = require('../../libs/result')
 const demo = new Router({
@@ -6,6 +6,7 @@ const demo = new Router({
 })
 
 demo.all('/list', async (ctx) => {
+  console.log(ctx.config.getItem('db'))
   let v = await new DemoValidator().validate(ctx, {
     flag: 'type'
   })

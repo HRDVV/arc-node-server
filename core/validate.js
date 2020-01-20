@@ -3,7 +3,7 @@
  * @email hrd.candy.dev@gamil.com
  * @create date 2020-01-17 12:43:40
  * @modify date 2020-01-17 12:43:40
- * @desc 校验器
+ * @desc 校验器(基于对lin-validator、validator的学习)
  */
 
 const validator = require('validator')

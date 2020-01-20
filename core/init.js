@@ -10,7 +10,7 @@ const Koa = require('koa')
 const requireDirectory = require('require-directory')
 const { set } = require('lodash')
 const Router = require('./router')
-const Config = require('./config')
+const config = require('./config')
 const { Service } = require('./interface')
 const { getIPAdress } = require('./utils')
 
@@ -19,7 +19,8 @@ class ArcInit extends Koa {
     super()
     this.root = process.cwd()
     Object.assign(this, options)
-    this.context.config = new Config(this.configPath)
+    config.findConfig(this.configPath)
+    this.context.config = config
   }
   /**
    * 启动应用
