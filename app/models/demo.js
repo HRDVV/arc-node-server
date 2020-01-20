@@ -1,5 +1,6 @@
 
 const { db, Model, Sequelize } = require('../../core/db')
+
 class DemoModel extends Model {
 }
 

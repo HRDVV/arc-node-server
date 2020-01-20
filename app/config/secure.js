@@ -8,7 +8,6 @@ module.exports = {
       dialect: 'mysql',
       port: 3306,
       logging: true,
-    
       timezone: '+08:00',
       define: {
         //create_time  update_time delete_time
