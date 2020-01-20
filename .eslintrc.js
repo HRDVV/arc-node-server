@@ -19,7 +19,6 @@ module.exports = {
     "quotes": [2, "single"],
     "semi": [2, "never"],
     "object-curly-spacing": [2, "always"],
-    "no-await-in-loop": 2,
     "no-template-curly-in-string": 2,
     "require-await": 2,
     "wrap-iife": [2, "outside"],
