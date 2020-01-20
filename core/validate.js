@@ -20,11 +20,24 @@ class RuleResult {
 
 class Rule {
   constructor(name, message, ...options) {
+    /**
+     * 规则名称，即validator的函数名
+     */
     this.name = name
+    /**
+     * 校验失败时的文案
+     */
     this.message = message
+    /**
+     * 校验的配置项或非必填字段的默认值
+     */
     this.options = options
   }
 
+  /**
+   * 校验规则
+   * @param {any} value 
+   */
   validate(value) {
     if(this.name === 'isOptional') {
       return new RuleResult(true)
@@ -37,36 +50,58 @@ class Rule {
 }
 
 class FieldResult extends RuleResult {
-  constructor(success, message, defaultValue) {
+  constructor(success, message, legalValue) {
     super(success, message)
-    this.defaultValue = defaultValue
+    this.legalValue = legalValue
   }
 }
 
 class Field {
   constructor(rules) {
+    /**
+     * 字段的规则列表
+     */
     this.rules = rules
   }
-
-  validate(key, value) {
+  /**
+   * 校验字段
+   * @param {string} key 字段名称
+   * @param {any} value 字段值
+   */
+  validate(field, value) {
     let isOptional = this._isOptional()
     let defaultValue = this._getDefaultValue()
     if (value === null) {
       if (isOptional) {
         return new FieldResult(true, '', defaultValue)
       }
-      return new FieldResult(false, `字段【${ key }】为必填项`, null)
+      return new FieldResult(false, '必填项不能为空', null)
     }
     let fieldResult = new FieldResult(false)
     for (let rule of this.rules) {
       let ruleResult = rule.validate(value)
       if (!ruleResult.success) {
         fieldResult.message = ruleResult.message
-        fieldResult.defaultValue = null
+        fieldResult.legalValue = null
         return fieldResult
       }
     }
-    return new FieldResult(true, '', defaultValue)
+    return new FieldResult(true, '', this._convert(value))
+  }
+
+  _convert(value) {
+    for (let rule of this.rules) {
+      switch (rule.name) {
+        case 'isBoolean':
+          return validator.toBoolean(value)
+        case 'isFloat':
+          return parseFloat(value)
+        case 'isInt':
+          return parseInt(value)
+        default:
+          return value
+      }
+    }
   }
 
   _isOptional() {
@@ -88,17 +123,42 @@ class Field {
 
 class Validator {
   constructor() {
+    /**
+     * 原始数据
+     */
     this.originData = {}
+    /**
+     * 处理默认值以后的数据
+     */
     this.parsed = {}
   }
-
+  /**
+   * 获取前端传过来的数据
+   * @param {string | Array} keyPath 
+   * @param {boolean} parsed 是否获取处理过的数据
+   */
   get(keyPath, parsed = true) {
     if (parsed) {
-      return get(this.parsed, keyPath)
+      let value = get(this.parsed, keyPath, null)
+      // 前端没传，就去默认值里找
+      if (value === null) {
+        let keyArr = []
+        if (typeof keyPath === 'string') {
+          keyArr = keyPath.split('.').slice(1)
+        } else {
+          keyArr = keyPath.slice(1)
+        }
+        return get(this.parsed, ['default'].concat(keyArr), null)
+      }
+      return value
     }
-    return get(this.originData, keyPath)
+    return get(this.originData, keyPath, null)
   }
-
+  /**
+   * 校验
+   * @param {Application} ctx 
+   * @param {object} alias 
+   */
   async validate(ctx, alias) {
     // 收集参数
     let params = this._dataCompose(ctx)
@@ -114,7 +174,7 @@ class Validator {
         errs.push(result.message)
       }
     }
-    if (!errs.length) {
+    if (errs.length) {
       throw new BadRequestException(errs)
     }
     return this
@@ -125,7 +185,7 @@ class Validator {
     let isValidateFunc = typeof this[key] === 'function'
     if (isValidateFunc) {
       try {
-        await this[key](ctx)
+        await this[key](this.originData, ctx)
         fieldResult =  new RuleResult(true)
       } catch (error) {
         fieldResult = new RuleResult(false, error.message)
@@ -135,8 +195,14 @@ class Validator {
       key = this._transformField(key, alias)
       const [paramValue, path] = this._findParamValue(key)
       fieldResult = field.validate(key, paramValue)
-      if (paramValue === null && fieldResult.success) {
-        set(this.parsed, [path, key], fieldResult.defaultValue)
+      if (fieldResult.success) {
+        // 如果前端没有传该字段，且校验成功，说明该字段是非必填的，这时给赋上默认值
+        if (paramValue === null) {
+          set(this.parsed, ['default', key], fieldResult.legalValue)
+        } else {
+          set(this.parsed, [path, key], fieldResult.legalValue)
+        }
+        
       }
     }
     if (fieldResult.success) {
@@ -147,21 +213,21 @@ class Validator {
     }
     return {
       success: false, 
-      message: `${ isValidateFunc ? '' : key }: ${ fieldResult.message }`
+      message: `${ isValidateFunc ? '' : (key + ':') }${ fieldResult.message }`
     }
   }
 
   _findParamValue(key) {
-    let value = get(this.parsed, ['query', key])
+    let value = get(this.parsed, ['query', key], null)
     if (value) 
       return [value, 'query']
-    value = get(this.parsed, ['path', key])
+    value = get(this.parsed, ['path', key], null)
     if (value) 
       return [value, 'path']
-    value = get(this.parsed, ['body', key])
+    value = get(this.parsed, ['body', key], null)
     if (value) 
       return [value, 'body']
-    value = get(this.parsed, ['header', key])
+    value = get(this.parsed, ['header', key], null)
     if (value) 
       return [value, 'header']
     return [null, null]
