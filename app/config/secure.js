@@ -1,31 +1,31 @@
 module.exports = {
   db: {
-    database: 'spider',
+    database: 'api_server',
     username: 'root',
     password: '12345678',
     options: {
       host: 'localhost',
       dialect: 'mysql',
       port: 3306,
-      logging: true,
+      logging: false,
       timezone: '+08:00',
       define: {
-        //create_time  update_time delete_time
         timestamps: true,
         paranoid: true,
         createdAt: 'created_at',
         updatedAt: 'updated_at',
         deletedAt: 'deleted_at',
         underscored: true,
-        freezeTableName: true,
-        scopes: {
-          bh: {
-            attributes: {
-              exclude: ['updated_at', 'deleted_at', 'created_at']
-            }
-          }
-        }
+        freezeTableName: true
       }
     }
+  },
+  wx: {
+    appId: 'wx23e89c9000ba99be',
+    appSecret: 'eee893e2d646fc80282ec61101c926c6'
+  },
+  jwt: {
+    secret: 'hrdvv123456',
+    expiresIn: 60 * 60 * 2
   }
 }

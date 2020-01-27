@@ -40,6 +40,7 @@ module.exports = {
     "comma-spacing": 2,
     "eol-last": ["error", "always"],
     "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
-    "node/no-unsupported-features/es-syntax": "off"
+    "node/no-unsupported-features/es-syntax": "off",
+    "node/no-missing-require": "off"
   }
 }

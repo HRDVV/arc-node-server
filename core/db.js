@@ -20,4 +20,4 @@ db.sync({
   force: false
 })
 
-module.exports = { db, Model, Sequelize }
+module.exports = { db, Model, DB: Sequelize }

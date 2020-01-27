@@ -6,6 +6,8 @@
  * @desc helper
  */
 
+const bcrypt = require('bcrypt')
+
 module.exports = {
   /**
    * 对象转json
@@ -42,5 +44,13 @@ module.exports = {
       return [...keys, ..._find(Reflect.getPrototypeOf(instance), filterFunc)]
     }
     return _find(target)
+  },
+  hash(data) {
+    let salt = bcrypt.genSaltSync(10)
+    let hash = bcrypt.hashSync(data, salt)
+    return hash
+  },
+  compare(other, data) {
+    return bcrypt.compareSync(other, data)
   }
 }

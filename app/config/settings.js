@@ -5,5 +5,6 @@ module.exports = {
     'api/v1',
     'models', 
     'services'
-  ]
+  ],
+  wxApi: 'https://api.weixin.qq.com'
 }
