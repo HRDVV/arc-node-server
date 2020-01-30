@@ -19,11 +19,11 @@ class User extends Service {
    * @param {*} params 
    */
   async register(params) {
-    let u = await this.ctx.models.User.findOne({ where: { username: params.username } })
+    let u = await this.ctx.models.User.findUserByName(params.username)
     if (u) {
-      throw new BadRequestException('用户名已存在')
+      throw new BadRequestException('用户已存在')
     }
-    await this.ctx.models.User.create(params)
+    await User.registerUserByInfo(params)
   }
   /**
    * 邮箱密码登录
@@ -36,12 +36,27 @@ class User extends Service {
     if (!isEmail) {
       throw new BadRequestException('不符合邮箱的格式')
     }
-    let user = await this.ctx.models.User.findOne({ where: { email } })
+    let user = await this.ctx.models.User.findUserByEmail(email)
     if (!user) {
       throw new UnAnthorizedException('用户不存在')
     }
     if (!compare(pwd, user.getDataValue('password'))) {
       throw new UnAnthorizedException('密码错误')
+    }
+    return this.genToken(user)
+  }
+  /**
+   * 微信登录
+   * @param {*} code 
+   */
+  async loginByWX(code) {
+    if (!code) 
+      throw new BadRequestException('code不能为空')
+    let result = await this.ctx.services.WX.code2Session(code)
+    let openid = result.openid
+    let user = await this.ctx.models.User.findUserByOpenId(openid)
+    if (!user) {
+      await this.ctx.models.User.registerUserByOpenId(openid)
     }
     return this.genToken(user)
   }

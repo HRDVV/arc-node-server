@@ -7,6 +7,7 @@ module.exports = function createApp(app) {
   // 全局异常处理
   app.use(error)
   app.use(bodyParser())
+  
   // 注入扩展
   app.injectExtends()
   app.run()

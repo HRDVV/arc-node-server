@@ -1,7 +1,46 @@
 const { db, DB, Model } = require('../../core/db')
 const { hash } = require('../../core/utils')
 
-class User extends Model {}
+class User extends Model {
+  /**
+   * 根据用户名查询用户
+   * @param {*} username 
+   */
+  static async findUserByName(username) {
+    let user = await User.findOne({ where: { username } })
+    return user
+  }
+  /**
+   * 根据邮箱查询用户
+   * @param {*} email 
+   */
+  static async findUserByEmail(email) {
+    let user = await User.findOne({ where: { email } })
+    return user
+  }
+  /**
+   * 根据openid查询用户
+   * @param {*} openid 
+   */
+  static async findUserByOpenId(openid) {
+    let user = await User.findOne({ where: { openid } })
+    return user
+  }
+  /**
+   * 根据基本信息创建用户
+   * @param {*} params 
+   */
+  static async registerUserByInfo(params) {
+    await User.create(params)
+  }
+  /**
+   * 根据openId创建用户
+   * @param {*} openid 
+   */
+  static async registerUserByOpenId(openid) {
+    await User.create({ openid })
+  }
+}
 
 User.init({
   id: {

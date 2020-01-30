@@ -7,15 +7,10 @@
  */
 
 const { toJSON } = require('../../core/utils')
-const logger = require('../../core/log/index')
-
-const { outLog: log, appLog } = logger()
 
 module.exports = async (ctx, next) => {
-  
   try {
-    ctx.log = appLog
-    log.info(`>>>> ${ ctx.header['user-agent'] } | ${ ctx.method } | ${ ctx.url } -- query: ${ toJSON(ctx.request.query) } body: ${ toJSON(ctx.request.body) }`)
+    ctx.log.info(`>>>> ${ ctx.header['user-agent'] } | ${ ctx.method } | ${ ctx.url } -- query: ${ toJSON(ctx.request.query) } body: ${ toJSON(ctx.request.body) }`)
   } catch (error) {
     console.error(error)
     console.error('>>>> 记录日志失败， 请求信息：' + toJSON(ctx.request))
@@ -24,5 +19,5 @@ module.exports = async (ctx, next) => {
   await next()
   let endTime = Date.now()
   let duration = endTime - startTime
-  log.info(`>>>> ${ ctx.url } 总耗时: ${ duration / 1000 }s` )
+  ctx.log.info(`>>>> ${ ctx.url } 总耗时: ${ duration / 1000 }s` )
 } 

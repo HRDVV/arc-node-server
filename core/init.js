@@ -8,19 +8,35 @@
 
 const Koa = require('koa')
 const requireDirectory = require('require-directory')
+const axios = require('axios')
 const { set } = require('lodash')
 const Router = require('./router')
 const config = require('./config')
 const { Service } = require('./interface')
+const { Model } = require('sequelize')
 const { getIPAdress } = require('./utils')
+const logger = require('./log/index')
 
 class ArcInit extends Koa {
   constructor(options) {
     super()
     this.root = process.cwd()
     Object.assign(this, options)
+    // 找到所有的配置
     config.findConfig(this.configPath)
-    this.context.config = config
+    this.extendsContext(config)
+  }
+  /**
+   * 扩展上下文
+   * @param {*} cfg 
+   */
+  extendsContext(cfg) {
+    this.context.config = cfg
+    this.context.log = logger(cfg.getItem('log') || {}).outLog
+    this.context.http = axios
+    this.config = this.context.config
+    this.log = this.context.log
+    this.http = this.context.http
   }
   /**
    * 启动应用
@@ -51,15 +67,20 @@ class ArcInit extends Koa {
     }, {})
     for(let [dirname, dir] of Object.entries(injectDirs)) {
       let modules = requireDirectory(module, dir)
+      this.context[dirname] = {}
       for(let [name, item] of Object.entries(modules)) {
         if (Service === Reflect.getPrototypeOf(item)) {
-          this.context[dirname] = {}
-          set(this.context[dirname], name, Reflect.construct(item, [this.context]))
+          set(this.context[dirname], name, null)
+          Object.defineProperty(this.context[dirname], name, {
+            get: () => Reflect.construct(item, [this.context])
+          })
         } else if (this.injectRouter != false && item instanceof Router && !item.opts.disabled) {
           this.use(item.routes()).use(item.allowedMethods())
-        } else {
-          this.context[dirname] = {}
-          set(this.context[dirname], name, item)
+        } else if (Model === Reflect.getPrototypeOf(item)) {
+          set(this.context[dirname], name, null)
+          Object.defineProperty(this.context[dirname], name, {
+            get: () => item
+          })
         }
       }
     }

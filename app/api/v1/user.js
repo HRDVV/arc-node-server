@@ -1,9 +1,9 @@
 const Router = require('@core/router')
 const { BadRequestException } = require('../../../core/exception')
-const { RegisterValidator, LoginValidator } = require('@app/validators/user')
+const { RegisterValidator, LoginValidator, VertifyValidator } = require('@app/validators/user')
 const ResultWraper = require('@app/libs/result')
-const { LoginType, Auth } = require('../../libs/enum')
-const auth = require('../../middlewares/auth')
+const { LoginType } = require('../../libs/enum')
+const { vertify } = require('@core/jwt')
 
 const user = new Router({
   prefix: '/v1/user'
@@ -29,11 +29,13 @@ user.post('/register', async ctx => {
  */
 user.post('/login', async ctx => {
   const v = await new LoginValidator().validate(ctx)
-  if (!v.get('body.password')) 
+  let type = v.get('body.type')
+  if (!v.get('body.password') && type != LoginType.WX) 
     throw new BadRequestException('密码不能为空')
   let token
-  switch(v.get('body.type')) {
+  switch(type) {
     case LoginType.WX:
+      token = await ctx.services.User.loginByWX(v.get('body.code'))
       break
     case LoginType.EP:
       token = await ctx.services.User.loginByEmail(v.get('body'))
@@ -47,8 +49,19 @@ user.post('/login', async ctx => {
   }
   ctx.body = ResultWraper.success(token)
 })
-user.get('/getUser', auth(Auth.ADMIN), (ctx) => {
-  ctx.body = ctx.userInfo
+/**
+ * 验证token是否过期
+ */
+user.get('/vertify', async ctx => {
+  const v = await new VertifyValidator().validate(ctx)
+  let isValid
+  try {
+    await vertify(v.get('query.token'))
+    isValid = true
+  } catch (error) {
+    isValid = false
+  }
+  ctx.body = ResultWraper.success(isValid)
 })
 
 module.exports = user

@@ -35,12 +35,24 @@ class LoginValidator extends Validator {
   constructor() {
     super()
     this.type = [
-      new Rule('isInt', '必须是整型')
+      new Rule('isInt', '必须是整数')
+    ]
+  }
+}
+/**
+ * 认证token
+ */
+class VertifyValidator extends Validator {
+  constructor() {
+    super()
+    this.token = [
+      new Rule('isLength', '不能为空', { min: 1 })
     ]
   }
 }
 
 module.exports = {
   RegisterValidator,
-  LoginValidator
+  LoginValidator,
+  VertifyValidator
 }

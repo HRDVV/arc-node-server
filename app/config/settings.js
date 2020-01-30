@@ -2,9 +2,9 @@ module.exports = {
   env: process.env.NODE_ENV,
   rootDir: 'app',
   injects: [
-    'api/v1',
     'models', 
-    'services'
+    'services',
+    'api/v1'
   ],
   wxApi: 'https://api.weixin.qq.com'
 }
