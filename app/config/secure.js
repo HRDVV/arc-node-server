@@ -7,7 +7,7 @@ module.exports = {
       host: 'localhost',
       dialect: 'mysql',
       port: 3306,
-      logging: false,
+      logging: process.env.NODE_ENV === 'development',
       timezone: '+08:00',
       define: {
         timestamps: true,
