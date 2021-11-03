@@ -41,7 +41,7 @@
     "mysql2": "^2.1.0",
     "require-directory": "^2.1.1",
     "sequelize": "^5.21.3",
-    "validator": "^12.1.0"
+    "validator": "^13.7.0"
   },
   "_moduleAliases": {
     "@app": "app",
